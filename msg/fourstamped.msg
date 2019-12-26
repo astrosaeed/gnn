@@ -1,0 +1,4 @@
+geometry_msgs/PoseWithCovarianceStamped stampedpose_1
+geometry_msgs/PoseWithCovarianceStamped stampedpose_2
+geometry_msgs/PoseWithCovarianceStamped stampedpose_3
+geometry_msgs/PoseWithCovarianceStamped stampedpose_4
