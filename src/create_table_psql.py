@@ -113,7 +113,7 @@ def create_meta_table(tablename):
 
 
 if __name__ == '__main__':
-
+	'''
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--maintable', type=str, required=True,
 						help="main table name")
@@ -122,6 +122,6 @@ if __name__ == '__main__':
 	args = parser.parse_args()
 	for k, v in vars(args).items():
 		globals()['FLAGS_%s' % k] = v
-
-	create_main_table(FLAGS_maintable)
-	create_meta_table(FLAGS_metatable)
+	'''
+	create_main_table(config.maintable)
+	create_meta_table(config.metatable)

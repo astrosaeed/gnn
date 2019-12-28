@@ -5,13 +5,13 @@ import config
 import argparse
 import glob
 
-def updatemaintable():
+def updatemaintable(maintable,metatable):
 
 	
-	sql_update = """UPDATE dec24
-	SET xmap=dec24meta.x2, y=dec24meta.y2
-	FROM dec24meta
-	WHERE dec24.filename = dec24meta.filename"""
+	sql_update = """UPDATE """+maintable+"""
+	SET x="""+metatable+""".x2, y="""+metatable+""".y2
+	FROM """+metatable+"""
+	WHERE """+maintable+""".filename = """+metatable+""".filename"""
 	conn = None
 	try:
 		conn = pg.connect("dbname="+config.dbname+" user="+config.user+" host="+config.host+" password="+config.password)
@@ -19,8 +19,8 @@ def updatemaintable():
 		cursor = conn.cursor()
 	
 		cursor.execute(sql_update)
-		update_r = """ UPDATE dec24
-						SET r=sqrt(power(xmap,2)+power(y,2))
+		update_r = """ UPDATE """+maintable+"""
+						SET r=sqrt(power(x,2)+power(y,2))
 					"""
 
 		cursor.execute(update_r)
@@ -39,4 +39,4 @@ def updatemaintable():
 
 if __name__ == '__main__':
 
-	updatemaintable()
+	updatemaintable(config.maintable,config.metatable)

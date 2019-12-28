@@ -4,12 +4,12 @@ import config
 import argparse
 import glob
 
-def append_all(parentfolder):
-	allfiles = (glob.glob('./'+parentfolder+'/*.csv'))
+def append_all(parentfolder,maintable):
+	allfiles = (glob.glob(parentfolder+'/*.csv'))
 	print (allfiles[0])
 
 	#file = './results/final_outputs_photo_1576700560.jpg.csv'
-	sql_insert = """INSERT INTO dec24(filename,id,obj1,predicate,
+	sql_insert = """INSERT INTO """+maintable+""" (filename,id,obj1,predicate,
 				obj2,prob,obj1_1,obj1_2 ,obj1_3, obj1_4,
 				obj2_1 ,obj2_2 ,obj2_3 ,obj2_4 )
 					VALUES(%s,%s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s,%s)"""
@@ -39,11 +39,11 @@ def append_all(parentfolder):
 			print("Connection closed.")
 
 
-def append_meta(metafile):
+def append_meta(metafile,metatable):
  
 
 	filename = metafile
-	sql_insert = """INSERT INTO dec24meta(filename,
+	sql_insert = """INSERT INTO """+metatable+"""(filename,
 				x1,y1,x2,y2,x3,y3,x4,y4)
 					VALUES(%s, %s, %s,%s, %s, %s, %s, %s, %s)"""
 
@@ -74,6 +74,7 @@ def append_meta(metafile):
 
 
 if __name__ == '__main__':
+	'''
 	parser = argparse.ArgumentParser()
 	parser.add_argument('--foldername', type=str, required=True,
 						help="folder where csvfiles are stored")
@@ -84,6 +85,11 @@ if __name__ == '__main__':
 		globals()['FLAGS_%s' % k] = v
 
 	resultsfolder = FLAGS_foldername
-	metafile = FLAGS_metafile
-#	append_all(resultsfolder)
-	append_meta(metafile)
+	'''
+
+	metafile = config.metafile
+	resultsfolder= config.resultsfolder
+	maintable=config.maintable
+	metatable = config.metatable
+	append_all(resultsfolder,maintable)
+	append_meta(metafile,metatable)

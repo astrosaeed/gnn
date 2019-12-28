@@ -18,7 +18,7 @@ def query(predtype,prob):
 
 	elif predtype == 'human':
 	
-		sql_select = """SELECT DISTINCT filename,obj1,predicate,obj2 FROM """+config.maintable +"""
+		sql_select = """SELECT DISTINCT filename,obj1,predicate,obj2,x,y,r FROM """+config.maintable +"""
 		WHERE prob>"""+str(prob)+""" AND id<4 AND (obj1='man' OR obj1='woman'  )"""
 
 	conn = None
@@ -30,20 +30,22 @@ def query(predtype,prob):
 		cursor.execute(sql_select)
 		all_rels = cursor.fetchall()
 		print (len(all_rels))
+		print (all_rels)
 		conn.commit()
 		print ('Done') 
 	except (Exception, pg.Error) as e:
 		print(e)
+		return False
 	finally:
 		if (conn):
 			cursor.close()
 			conn.close()
 			print("Connection closed.")
-
+			return all_rels
 
 
 
 if __name__ == '__main__':
 
-	#query('near',0.3)
-	query('human',0.3)
+	#query('near',0.1)
+	query('human',0.4)

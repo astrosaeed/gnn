@@ -1,0 +1,11 @@
+dbname="gnn"
+user="postgres"
+host="localhost"
+password="SardarAzmun"
+maintable="dec28"
+metatable="dec28meta"
+resultsfolder ="./results/2019-12-28-13-21" 
+metafile= "./metadata/loc_im_2019-12-28-13-21.csv"
+semantic_path = "/home/saeidfour/catkin_ws/src/bwi_common/utexas_gdc/maps/real/3/objects.yaml" 
+facts_path =  "/home/saeidfour/catkin_ws/src/bwi_common/bwi_kr_execution/domain_kinetic/navigation_facts.asp"
+abs_path = '/home/saeidfour/catkin_ws/src/gnn/src/'
