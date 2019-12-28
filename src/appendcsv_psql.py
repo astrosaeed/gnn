@@ -85,5 +85,5 @@ if __name__ == '__main__':
 
 	resultsfolder = FLAGS_foldername
 	metafile = FLAGS_metafile
-	append_all(resultsfolder)
+#	append_all(resultsfolder)
 	append_meta(metafile)
