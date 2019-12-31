@@ -13,7 +13,10 @@ from gnn.msg import fourpose
 import numpy as np
 import message_filters
 import time
-abs_path='/home/saeidfour/catkin_ws/src/gnn/src/input_images/'
+import datetime
+import config
+
+abs_path=config.abs_path
 class image_converter:
 
   def __init__(self):
@@ -64,8 +67,8 @@ class image_converter:
 
     if self.image_received:
 
-      cv2.imwrite(abs_path+foldername+'/rgb_'+img_title+'.jpg', self.color_array)
-      cv2.imwrite(abs_path+foldername+'/depth_'+img_title+'.pgm', self.depth_array*255)
+      cv2.imwrite(abs_path+'input_images/'+foldername+'/rgb_'+img_title+'.jpg', self.color_array)
+      cv2.imwrite(abs_path+'input_images/'+foldername+'/depth_'+img_title+'.pgm', self.depth_array*255)
       print ("test3")
       return True
     else:
@@ -98,12 +101,13 @@ if __name__ == '__main__':
   #  print("Shutting down")
   #cv2.destroyAllWindows()
   starttime =int(time.time())
-  image_folder_name = str(starttime) 
-  os.mkdir('/home/saeidfour/catkin_ws/src/gnn/src/input_images/'+image_folder_name)
-#  os.mkdir('/home/saeidfour/catkin_ws/src/gnn/src/metadata/'+image_folder_name)
+  current_date = datetime.datetime.today()
+  image_folder_name = str(current_date.year)+'-'+str(current_date.month)+'-'+str(current_date.day)+'-'+str(current_date.hour)+'-'+str(current_date.minute) 
+  os.mkdir(abs_path+'input_images/'+image_folder_name)
+  #os.mkdir(abs_path+'metadata/'+image_folder_name)
 
   image_freq = rospy.get_param("image_freq")
-  with open("loc_im.csv","a+") as f:
+  with open(abs_path+'metadata/'+'loc_im_'+image_folder_name+".csv","a+") as f:
 
       while True and not rospy.is_shutdown():
         rospy.Subscriber("object_loc",fourpose,ic.amclcallback)

@@ -185,7 +185,7 @@ def updatemaintable(maintable,metatable):
 
 	
 	sql_update = """UPDATE """+maintable+"""
-	SET x="""+metatable+""".x2, y="""+metatable+""".y2
+	SET x="""+metatable+""".x1, y="""+metatable+""".y1
 	FROM """+metatable+"""
 	WHERE """+maintable+""".filename = """+metatable+""".filename"""
 	conn = None
