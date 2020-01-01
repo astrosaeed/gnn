@@ -1,3 +1,6 @@
+import copy
+from math import sqrt , pow
+from pprint import pprint
 import sys
 sys.path.append("..")
 import query
@@ -6,6 +9,9 @@ from subprocess import PIPE
 import append_object_semantic_map
 from collections import defaultdict
 facts_file = "/home/saeidfour/catkin_ws/src/gnn/src/reasoning/facts.asp"
+
+def eucdist(p1, p2):
+	return sqrt(pow(p1[0]-p1[1],2)+pow(p2[0]-p2[1],2))	
 
 def removedups(givenlist):
 	finallist=[]
@@ -43,15 +49,17 @@ def extractnear(givenlist):
 	return finallist
 
 
-def appendtofacts(objects,grounds):
+def appendtofacts(objects,groundsdict):
 
 
 	with open(facts_file,"a+")as myfile:
 		for obj in objects:
-			myfile.write(obj+'\n')	
-		for gr in grounds:
+			myfile.write('object('+obj+').\n')	
+		for grkey in groundsdict.keys():
 			
-			myfile.write(gr+'\n')
+			aspfact = grkey[0]+'('+grkey[1]+','+grkey[2]+','+grounds[grkey][0][0]+').'
+
+			myfile.write(aspfact+'\n')
 
 	print ('Done with facts')
 
@@ -75,7 +83,12 @@ def reason_multiple(all_rels):
 
 	return objects, grounds
 
-if __name__ == '__main__':
+def sql_to_asp_human():
+
+	all_rels = query.query('human',0.4)
+
+	print (all_rels)
+def sql_to_asp_spatial():
 
 	all_rels = query.query('near',0.1)
 
@@ -88,37 +101,76 @@ if __name__ == '__main__':
 
 
 	all_rels = (removedups(all_rels))
-	#print  (newlist)
+	#print  (all_rels)
 
-	objects, grounds = reason_multiple(all_rels)
+	preddicts=defaultdict(list)
+	framedicts=defaultdict(list)
+	objects = []
+	for record in all_rels:
+		rel = (record[1],record[0],record[2])
+		coord = (record[3],record[4])
+		frame_id = record[5]
+		if record[0] not in objects:
+			objects.append(record[0])
+		if record[2] not in objects:
 
+			objects.append(record[2])
+
+		if len(preddicts[rel])==0:
+			print ('added')
+			preddicts[rel].append((frame_id,coord))
+			print (type(frame_id))
+			framedicts[frame_id].append(coord)
+		else:
+			temp = copy.deepcopy(preddicts[rel])
+			for anypoint in temp:
+	#			print (anypoint)
+	#			print eucdist(coord, anypoint[1])
+				if eucdist(coord, anypoint[1]) <2:
+					print('hi')
+				else:
+					preddicts[rel].append((frame_id,coord))
+					framedicts[frame_id].append(coord)
+
+	print ('before')
+	pprint (len(preddicts.keys()))
+	
+	
+	#objects, grounds = reason_multiple(all_rels)
+	grounds = preddicts
 	#appendtofacts(objects,grounds)
 	
 	cmd = ["clingo", "facts.asp","rel.asp", "-n","0" ]
-
+	
 	process= subprocess.Popen(cmd,stdout=PIPE,stderr=PIPE)
 	stdout, stderr = process.communicate()
-	#print (stderr)
-	#print (stdout.split('\n'))
+	
 	last =extractnear(stdout.split('\n'))
+	for each in last:
+		splitted = (each.split(','))
+		#print (splitted)
+		rel = (splitted[0].split('(')[0],splitted[0].split('(')[1],splitted[1])
+		
+		fr_id = splitted[2].split(')')[0]
+		
+
+		#print (framedicts[fr_id[:-1]])
+		if rel not in preddicts.keys():
+			preddicts[rel].append((fr_id,framedicts[fr_id][0]))
+
+	print ('after')
+	pprint (preddicts)
+	
+
+	append_object_semantic_map.from_sql(preddicts)
 
 
-	 
-	kol = list(set(last) - set(grounds))
-	#print (kol)
-	#append_object_semantic_map.from_sql(kol)
+	
+
+if __name__ == '__main__':
 
 
-	######3From here, it is for the task planner
-	#for each in kol:
-	#	print (each)
-	relstaskplan = []
-	print (kol[0].split('(')[0])
-	print (kol[0].split('(')[1].split(','))
-	for rel in kol:
-		relstaskplan.append((rel.split('(')[1].split(',')[0],rel.split('(')[0],rel.split('(')[1].split(',')[1],rel.split('(')[1].split(',')[2],rel.split('(')[1].split(',')[3]))
-
-	print (relstaskplan)
+	sql_to_asp_human()
 
 
-	append_object_semantic_map.from_sql(relstaskplan)
+	

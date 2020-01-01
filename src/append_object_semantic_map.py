@@ -5,14 +5,14 @@ import config
 semantic_path = config.semantic_path
 facts_path = config.facts_path
 
-def from_sql(all_rels):
+def from_sql(all_relsdict):
 
 	with open(semantic_path,"a+")as myfile:
-		for i,rel in enumerate(all_rels):
-			print (rel)
-			object_name = rel[0]+'_'+rel[1]+'_'+rel[2]
-			object_x = str(rel[3])
-			object_y = str(rel[4])
+		for i,rel in enumerate(all_relsdict):
+			print (all_relsdict[rel])
+			object_name = rel[1]+'_'+rel[0]+'_'+rel[2]
+			object_x = str(all_relsdict[rel][0][1][0])
+			object_y = str(all_relsdict[rel][0][1][1])
 			print (object_name+'\t'+str(object_x)+'\t'+str(object_y))
 
 
@@ -20,11 +20,11 @@ def from_sql(all_rels):
 			myfile.write("\n- name: "+object_name+'\n  point: ['+object_x+', '+object_y+', 0.0]')
 
 	with open(facts_path,"a+")as myfile:
-		for rel in all_rels:
+		for rel in all_relsdict:
 			
-			object_name = rel[0]+'_'+rel[1]+'_'+rel[2]
-			object_x = rel[3]
-			object_y = rel[4]
+			object_name = rel[1]+'_'+rel[0]+'_'+rel[2]
+			object_x = str(all_relsdict[rel][0][1][0])
+			object_y = str(all_relsdict[rel][0][1][1])
 			print (object_name+'\t'+str(object_x)+'\t'+str(object_y))
 
 
