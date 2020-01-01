@@ -86,8 +86,42 @@ def reason_multiple(all_rels):
 def sql_to_asp_human():
 
 	all_rels = query.query('human',0.4)
+	all_rels = (removedups(all_rels))
+	#print  (all_rels)
 
-	print (all_rels)
+	preddicts=defaultdict(list)
+	framedicts=defaultdict(list)
+
+	for record in all_rels:
+		rel = (record[1],record[0],record[2])
+		coord = (record[3],record[4])
+		frame_id = record[5]
+
+
+		if len(preddicts[rel])==0:
+			print ('added')
+			preddicts[rel].append((frame_id,coord))
+			print (type(frame_id))
+			framedicts[frame_id].append(coord)
+		else:
+			temp = copy.deepcopy(preddicts[rel])
+			for anypoint in temp:
+	#			print (anypoint)
+	#			print eucdist(coord, anypoint[1])
+				if eucdist(coord, anypoint[1]) <2:
+					print('hi')
+				else:
+					preddicts[rel].append((frame_id,coord))
+					framedicts[frame_id].append(coord)
+
+	print ('before')
+	pprint (preddicts)
+
+	append_object_semantic_map.from_sql(preddicts)
+
+
+
+	
 def sql_to_asp_spatial():
 
 	all_rels = query.query('near',0.1)
