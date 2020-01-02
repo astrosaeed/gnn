@@ -57,7 +57,7 @@ def appendtofacts(objects,groundsdict):
 			myfile.write('object('+obj+').\n')	
 		for grkey in groundsdict.keys():
 			
-			aspfact = grkey[0]+'('+grkey[1]+','+grkey[2]+','+grounds[grkey][0][0]+').'
+			aspfact = grkey[0]+'('+grkey[1]+','+grkey[2]+','+groundsdict[grkey][0][0]+').'
 
 			myfile.write(aspfact+'\n')
 
@@ -101,7 +101,7 @@ def sql_to_asp_human():
 		if len(preddicts[rel])==0:
 			print ('added')
 			preddicts[rel].append((frame_id,coord))
-			print (type(frame_id))
+			#print (type(frame_id))
 			framedicts[frame_id].append(coord)
 		else:
 			temp = copy.deepcopy(preddicts[rel])
@@ -124,6 +124,9 @@ def sql_to_asp_human():
 	
 def sql_to_asp_spatial():
 
+	f = open('facts.asp','r+')
+	f.truncate(0)    # clear the contents of facts.asp at first
+
 	all_rels = query.query('near',0.1)
 
 	for rel in all_rels:
@@ -136,7 +139,7 @@ def sql_to_asp_spatial():
 
 	all_rels = (removedups(all_rels))
 	#print  (all_rels)
-
+	
 	preddicts=defaultdict(list)
 	framedicts=defaultdict(list)
 	objects = []
@@ -151,9 +154,9 @@ def sql_to_asp_spatial():
 			objects.append(record[2])
 
 		if len(preddicts[rel])==0:
-			print ('added')
+			#print ('added')
 			preddicts[rel].append((frame_id,coord))
-			print (type(frame_id))
+			#print (type(frame_id))
 			framedicts[frame_id].append(coord)
 		else:
 			temp = copy.deepcopy(preddicts[rel])
@@ -161,24 +164,26 @@ def sql_to_asp_spatial():
 	#			print (anypoint)
 	#			print eucdist(coord, anypoint[1])
 				if eucdist(coord, anypoint[1]) <2:
-					print('hi')
+					print(' ')
 				else:
 					preddicts[rel].append((frame_id,coord))
 					framedicts[frame_id].append(coord)
 
 	print ('before')
-	pprint (len(preddicts.keys()))
+	pprint (preddicts.keys())
 	
 	
 	#objects, grounds = reason_multiple(all_rels)
 	grounds = preddicts
-	#appendtofacts(objects,grounds)
+	appendtofacts(objects,grounds)
 	
 	cmd = ["clingo", "facts.asp","rel.asp", "-n","0" ]
 	
 	process= subprocess.Popen(cmd,stdout=PIPE,stderr=PIPE)
 	stdout, stderr = process.communicate()
-	
+	print (stdout)
+	print (framedicts.keys())
+
 	last =extractnear(stdout.split('\n'))
 	for each in last:
 		splitted = (each.split(','))
@@ -186,25 +191,27 @@ def sql_to_asp_spatial():
 		rel = (splitted[0].split('(')[0],splitted[0].split('(')[1],splitted[1])
 		
 		fr_id = splitted[2].split(')')[0]
-		
+		#print (fr_id)
+
+		#print (framedicts[fr_id])
 
 		#print (framedicts[fr_id[:-1]])
 		if rel not in preddicts.keys():
 			preddicts[rel].append((fr_id,framedicts[fr_id][0]))
 
 	print ('after')
-	pprint (preddicts)
+	pprint (len (preddicts.keys()))
 	
 
 	append_object_semantic_map.from_sql(preddicts)
-
 
 	
 
 if __name__ == '__main__':
 
 
-	sql_to_asp_human()
+	sql_to_asp_spatial()
 
 
 	
+
