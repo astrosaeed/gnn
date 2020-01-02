@@ -6,8 +6,7 @@ import glob
 
 def create_main_table(tablename):
 	""" create tables in the PostgreSQL database"""
-	commands = (
-		"""
+	command = ("""
 		CREATE TABLE """+tablename+""" (
 			filename VARCHAR(80),
 			id INT,
@@ -25,15 +24,10 @@ def create_main_table(tablename):
 			obj2_4 FLOAT(2),
 			x FLOAT(2),
 			y FLOAT(2),
-			r FLOAT(2)
-		)
-		""",
-		""" CREATE TABLE dummy1 (
-				part_id SERIAL PRIMARY KEY
-				)
-		"""
-			)
+			r FLOAT(2))
+		""")
 	conn = None
+#	print (type(commands))
 	try:
 	  
 		# connect to the PostgreSQL server
@@ -44,16 +38,17 @@ def create_main_table(tablename):
 
 		cur = conn.cursor()
 		# create table one by one
-		
-		for command in commands:
-			print (command)
-			cur.execute(command)
+				
+		#for command in commands:
+		#	print (command)
+		cur.execute(command)
 
 		print ('executed')
 		# close communication with the PostgreSQL database server
+		conn.commit()
 		cur.close()
 		# commit the changes
-		conn.commit()
+		#conn.commit()
 	except (Exception, pg.DatabaseError) as error:
 		print(error)
 
@@ -64,7 +59,7 @@ def create_main_table(tablename):
 
 def create_meta_table(tablename):
 	""" create tables in the PostgreSQL database"""
-	commands = (
+	command = (
 		"""
 		CREATE TABLE """+ tablename+""" (
 			filename VARCHAR(80),
@@ -77,12 +72,7 @@ def create_meta_table(tablename):
 			x4 FLOAT(2),
 			y4 FLOAT(2)
 		)
-		""",
-		""" CREATE TABLE dummy2 (
-				part_id SERIAL PRIMARY KEY
-				)
-		"""
-			)
+		""")
 	conn = None
 	try:
 	  
@@ -95,9 +85,9 @@ def create_meta_table(tablename):
 		cur = conn.cursor()
 		# create table one by one
 		
-		for command in commands:
-			print (command)
-			cur.execute(command)
+		#for command in commands:
+		#print (command)
+		cur.execute(command)
 
 		print ('executed')
 		# close communication with the PostgreSQL database server
@@ -114,7 +104,7 @@ def create_meta_table(tablename):
 
 
 
-		def append_all(parentfolder,maintable):
+def append_all(parentfolder,maintable):
 	allfiles = (glob.glob(parentfolder+'/*.csv'))
 	print (allfiles[0])
 
@@ -231,7 +221,7 @@ if __name__ == '__main__':
 	create_main_table(maintable)
 	create_meta_table(metatable)
 
-	append_all(resultsfolder,maintable)
-	append_meta(metafile,metatable)
+	#append_all(resultsfolder,maintable)
+	#append_meta(metafile,metatable)
 
-	updatemaintable(maintable,metatable)
+	#updatemaintable(maintable,metatable)
