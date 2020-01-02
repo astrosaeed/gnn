@@ -30,14 +30,14 @@ class image_converter:
     self.image_received= False
     self.color_array = None
     self.depth_array = None
-    self.x1= None
-    self.y1=None
-    self.x2= None
-    self.y2=None
-    self.x3= None
-    self.y3=None
-    self.x4= None
-    self.y4=None
+    self.x1= 0
+    self.y1=0
+    self.x2= 0
+    self.y2=0
+    self.x3= 0
+    self.y3=0
+    self.x4= 0
+    self.y4=0
 
   def callback(self,rgb_data, depth_data):
     try:
