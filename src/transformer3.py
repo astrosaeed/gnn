@@ -1,10 +1,9 @@
+#!/usr/bin/env python  
 '''
 This node does the coordinates transformation so that the robot knows the coordinates of objects in
 front of it at any time. Then, the it publishes to the topic object_loc to be used by another node  
-
 '''
 
-#!/usr/bin/env python  
 import roslib
 import tf2_ros
 import tf2_geometry_msgs
