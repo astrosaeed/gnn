@@ -1,3 +1,8 @@
+'''
+This code creates table in the database, but it requires correct name of the 
+results folder (config.py), after csv outputs are written in the results folder
+'''
+
 import psycopg2 as pg
 import csv
 import config

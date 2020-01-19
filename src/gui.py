@@ -1,3 +1,12 @@
+'''
+This is a GUI used for debugging and visualization purposes.
+
+To check the relationships on the image, just type down
+
+python gui.py --image [image_name] --csvfile [csv file of the output]
+
+But before that, you need to install the libraries in a virtual env or anaconda env
+'''
 from tkinter import *
 import csv
 from PIL import Image, ImageTk

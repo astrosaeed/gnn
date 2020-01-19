@@ -1,3 +1,9 @@
+'''
+This node takes rgb and depth images at the same time. Also, it saves the information (coordinates)
+of the objects in a csv file that is save in the /metadata folder and later used by the database.
+It subsribes to the object_loc topic
+'''
+
 #!/usr/bin/env python
 import os
 import roslib
