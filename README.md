@@ -111,3 +111,11 @@ $ roscd gnn/src/reasoning
 $ python sql_to_asp.py
 ```
 
+### Visualization of single image
+Make sure the libraries in gui.py are installed in a virtual environment. Then run 
+
+```
+$ roscd gnn/src/
+$ python gui.py --image [image_name] --csvfile [csv file of the output]
+```
+
