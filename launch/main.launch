@@ -1,7 +1,7 @@
 <launch>
-  <include file="$(find bwi_launch)/launch/segbot_bu.launch"/>
+<!--  <include file="$(find bwi_launch)/launch/segbot_bu.launch"/> -->
   <node pkg="gnn" name="transformer" type="transformer3.py"/>
   <node pkg="gnn" name="image_loc" type="image_loc.py"/>
-  <param name="image_freq" value="2"/>
-
+  <param name="image_freq" value="4"/>
+  <param name="currentmap" value="3rdFloor_map"/>
 </launch>
