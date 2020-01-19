@@ -5,13 +5,17 @@ In the current setup, a complete trial involves robot doing navigation while tak
 
 ## How to run the system?
 
-To run the system, first make sure the Segway-based robot is operating and localized perfectly. The segway-based repository instructions is [here](https://github.com/astrosaeed/bwi/tree/temp). Then, make sure that the parameters in
+To run the system, first make sure the Segway-based robot is operating and localized perfectly. The segway-based repository instructions is [here](https://github.com/astrosaeed/bwi/tree/temp).
+
+### Preprocessing parameters update
+
+Then, make sure that the parameters in
 
 ```
-~/catkin_ws/src/gnn/src/config.py 
+~/catkin_ws/src/gnn/launch/main.launch 
 ```
 
-file are all updated. 
+file, including imaging frequency and the map name are all updated. 
 
 ### Branch check
 
@@ -51,6 +55,19 @@ $ roslaunch bwi_joystick_teleop joystick_teleop.launch
 ```
 
 After navigation, once you are done, please shutdown the gnn main.launch process
+
+### Postprocessing parameters update
+
+Then, make sure that the parameters in
+
+```
+~/catkin_ws/src/gnn/src/config.py 
+```
+
+file are all updated. 
+
+
+
 
 ### Relation extraction (Google Cloud)
 
