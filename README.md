@@ -71,7 +71,13 @@ file are all updated.
 
 ### Relation extraction (Google Cloud)
 
-Now, it is the time to send the images to the Google Cloud: To do that, make sure that [Google Cloud Virtual Machine (VM)](https://console.cloud.google.com/compute/instances?project=just-lore-265322&authuser=2&instancessize=50) (Ask me for ID and password) is turned on. If it is on, on a new terminal, ssh to the VM and make sure the data folders and results folder are empty (To avoid confusion with other previous results)    
+Now, it is the time to send the images to the Google Cloud: To do that, make sure that [Google Cloud Virtual Machine (VM)](https://console.cloud.google.com/compute/instances?project=just-lore-265322&authuser=2&instancessize=50) (Ask me for ID and password) is turned on. If it is on, on a new terminal, ssh to the VM by typing: 
+```
+$ ssh_gcp
+```
+
+
+and make sure the data folders and results folder are empty (To avoid confusion with other previous results)    
 
 Next scp the images to the VM and in the VM, an example command would be:
 
