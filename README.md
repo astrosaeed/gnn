@@ -77,7 +77,7 @@ Next scp the images to the VM and in the VM, an example command would be:
 
 ```
 $ roscd gnn/src/input_images/2020-1-10-18-25
-$ gcloud compute scp *.jpg saedi@instance-2:~/KERN/data/input_images
+$ gcloud compute scp *.jpg saeid@instance-2:~/KERN/data/input_images
 ```
 
 Once transferring images is done, run the following command:
@@ -85,7 +85,7 @@ Once transferring images is done, run the following command:
 
 ```
 $ cd KERN/scripts/
-$ sh testone.sgls
+$ sh testone_sgdet.sh
 ```
 
 Once the relationship extraction is done, then scp all the outputs to the <b>results folder</b>. An example would be:
