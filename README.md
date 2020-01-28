@@ -73,7 +73,7 @@ file are all updated.
 
 Now, it is the time to send the images to the Google Cloud: To do that, make sure that [Google Cloud Virtual Machine (VM)](https://console.cloud.google.com/compute/instances?project=just-lore-265322&authuser=2&instancessize=50) (Ask me for ID and password) is turned on. If it is on, on a new terminal, ssh to the VM by typing: 
 ```
-$ ssh_gcp
+$ ssh_gcp    #(Assumption) ssh command is defined in .bashrc
 ```
 
 
@@ -82,23 +82,23 @@ and make sure the data folders and results folder are empty (To avoid confusion 
 Next scp the images to the VM and in the VM, an example command would be:
 
 ```
-$ roscd gnn/src/input_images/2020-1-10-18-25
-$ gcloud compute scp *.jpg saeid@instance-2:~/KERN/data/input_images
+$ roscd gnn/src/input_images/2020-1-10-18-25                    # In local machine
+$ gcloud compute scp *.jpg saeid@instance-2:~/KERN/data/input_images   # In local machine
 ```
 
 Once transferring images is done, run the following command:
 
 
 ```
-$ cd KERN/scripts/
-$ sh testone_sgdet.sh
+$ cd KERN/scripts/            # In google cloud terminal
+$ sh testone_sgdet.sh         # In google cloude terminal
 ```
 
 Once the relationship extraction is done, then scp all the outputs to the <b>results folder</b>. An example would be:
 
 ```
-$ roscd gnn/src/results/2020-1-10-18-25/
-$ gcloud compute scp saeid@instance-2:~/KERN/results/*.csv . 
+$ roscd gnn/src/results/2020-1-10-18-25/         # In local machine
+$ gcloud compute scp saeid@instance-2:~/KERN/results/*.csv .  # In local machine
 ```
 
 * REMEMBER TO SHUTDOWN THE GOOGLE CLOUD SERVICE, ELSE YOU WILL BE CHARGED MORE.
