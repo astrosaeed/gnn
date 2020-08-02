@@ -18,11 +18,12 @@ import re
 import glob
 
 
-X_IMAGE =550
+X_IMAGE =50
 #parent_folder = Path('/home/saeid/ai2thor/Kitchens_AI2Thor/')
 #current_folder =Path('/home/saeid/ai2thor/Kitchens_AI2Thor/FloorPlan13')
 parent_folder = Path('/home/saeid/gnn/data')
 current_folder =parent_folder/'itc' 
+#current_folder =parent_folder/'home' 
 current_image = current_folder/'0.jpeg'
 
 root = Tk()
@@ -65,81 +66,88 @@ relation_line = []
 obj1_text = ""
 obj2_text = ""
 
-def resize(img, direction):
+def resize(img,direction):
 
-    #img = Image.open(path)
-    print (img.size)
+	#img = Image.open(path)
+	print (img.size)
 
-    top = img.size[0]/6
-    bottom =top + img.size[1]/2
-    print (bottom)
-    if direction=='front':    
+	top = img.size[0]/6
+	bottom =top + img.size[1]/2
+	print (bottom)
+	if direction=='front':    
 
-        left = img.size[0]/2 - img.size[0]/4
-        print ('left ', left)
-        right= img.size[0]/2 + img.size[0]/4
-        print ('right  ', right)
-        result = img.crop((left,top,right,bottom))
+		left = img.size[0]/2 - img.size[0]/8
+		print ('left ', left)
+		right= img.size[0]/2 + img.size[0]/8
+		print ('right  ', right)
+		result = img.crop((left,top,right,bottom))
 
-    elif direction=='back':
-     
-        left = img.size[0]/2 + img.size[0]/4
-        print ('left ', left)
-        right= img.size[0]
-        print ('right  ', right)
-        img1 = img.crop((left,top,right,bottom))
+	elif direction=='back':
+	 
+		left = 0
+		print ('left ', left)
+		right= img.size[0]/2 - img.size[0]/8 - img.size[0]/4
+		print ('right  ', right)
+		img1 = img.crop((left,top,right,bottom))
 
-        left = 0
-        print ('left ', left)
-        right= img.size[0]/2 - img.size[0]/4
-        print ('right  ', right)
-        img2= img.crop((left,top,right,bottom))
+		left = img.size[0]/2 + img.size[0]/8 + img.size[0]/4
+		print ('left ', left)
+		right= img.size[0]
+		print ('right  ', right)
+		img2= img.crop((left,top,right,bottom))
 
-        (width1, height1) = img1.size
-        (width2, height2) = img2.size
+		(width1, height1) = img1.size
+		(width2, height2) = img2.size
 
-        result_width = width1 + width2
-        result_height = max(height1, height2)
+		result_width = width1 + width2
+		result_height = max(height1, height2)
 
-        result = Image.new('RGB', (result_width, result_height))
-        result.paste(im=img1, box=(0, 0))
-        result.paste(im=img2, box=(width1, 0))
+		result = Image.new('RGB', (result_width, result_height))
+		result.paste(im=img2, box=(0, 0))
+		result.paste(im=img1, box=(width1, 0))
+	
+	elif direction=='right':
+	 
+		left = img.size[0]/2 + img.size[0]/8
+		print ('left ', left)
+		right= img.size[0]/2 + img.size[0]/8 + img.size[0]/4 
+		print ('right  ', right)
+		result= img.crop((left,top,right,bottom))
 
-    elif direction=='right':
-     
-        left = img.size[0]/2
-        print ('left ', left)
-        right= img.size[0] 
-        print ('right  ', right)
-        result= img.crop((left,top,right,bottom))
+	elif direction=='left':
+		left = img.size[0]/2 - img.size[0]/8 - img.size[0]/4
+		print ('left ', left)
+		right= img.size[0]/2 - img.size[0]/8
+		print ('right  ', right)
+	   
+		result= img.crop((left,top,right,bottom))
+	'''    
+	result_width = width1
+	result_height = 3*height2
 
-    elif direction=='left':
-        left = 0
-        print ('left ', left)
-        right= img.size[0]/2
-        print ('right  ', right)
-       
-        result= img.crop((left,top,right,bottom))
-        
+	result = Image.new('RGB', (result_width, result_height))
+	result.paste(im=result_front, box=(0, 0))
+	result.paste(im=result_back, box=(0, 2*height2))
+	'''
 
-    return result
-
+	return result
 
 
 
-def listbox(root):
+
+def listbox(root,width=50,height=30):
 	global Lb
 	#top = Tk()
 	count = 0
-	Lb = Listbox(root,width=70,height=83, selectmode=SINGLE)
-	Lb.width = 80
+	Lb = Listbox(root,width=50,height=30, selectmode=SINGLE)
+	Lb.width = 40
 	#s= " "
 	for key in relation_list:
 		#print (key)
 		Lb.insert(count, key)
 		count+=1
 	Lb.pack()
-	Lb.place(x=10,y=0) # For absolute positioning
+	Lb.place(x=5,y=600) # For absolute positioning
 	# http://zetcode.com/tkinter/layout/
 	Lb.bind('<<ListboxSelect>>',current_relation)
 	#top.mainloop()
@@ -278,24 +286,24 @@ def pan_canvas():
 
 
 def get_concat_h(im1, im2,im3,im4,im5,im6):
-    dst = Image.new('RGB', (im1.width*6, im1.height)) #hardcoded
-    dst.paste(im1, (0, 0))
-    dst.paste(im2, (im1.width, 0))
-    dst.paste(im3, (2*im1.width, 0))
-    dst.paste(im4, (3*im1.width, 0))
-    dst.paste(im5, (4*im1.width, 0))
-    dst.paste(im6, (5*im1.width, 0))
-    return dst
+	dst = Image.new('RGB', (im1.width*6, im1.height)) #hardcoded
+	dst.paste(im1, (0, 0))
+	dst.paste(im2, (im1.width, 0))
+	dst.paste(im3, (2*im1.width, 0))
+	dst.paste(im4, (3*im1.width, 0))
+	dst.paste(im5, (4*im1.width, 0))
+	dst.paste(im6, (5*im1.width, 0))
+	return dst
 
 	
-def custom(filename):
+def custom(filename,direction):
 
 	IM_SCALE = 592
 
 
 	image = Image.open(filename)
 
-	image_unpadded = resize(image,'front')
+	image_unpadded = resize(image,direction)
 
 	tform = [SquarePad(),Resize(IM_SCALE),ToTensor(), ]
 
@@ -313,53 +321,54 @@ def custom(filename):
 	return b
 
 def appear_photo(image, csvfile):
-	print ('before resize: ', type (image))
-	
-	print ('after resize: ', type (image))
-	background = custom(image)
-	
-	photo = ImageTk.PhotoImage(image= background)
+
+	front = custom(image,'front')
+	print ('front size', front.size)
+	back = custom(image,'back')
+	right = custom(image,'right')
+	left = custom(image,'left')
+
+	result_width = 3*front.size[0]+8
+	result_height = 2*front.size[1]
+
+	result = Image.new('RGB', (result_width, result_height))
+	result.paste(im=front, box=(front.size[0]+4, 0))
+	result.paste(im=back, box=(front.size[0]+4, int(front.size[0])+3 ))
+	result.paste(im=right, box=(2*front.size[0]+8,0))
+	result.paste(im=left, box=(0, 0))
+
+	photo = ImageTk.PhotoImage(image= result)
 	item = current_canvas.create_image(0, 0,anchor="nw" ,image=photo)
 	current_canvas.move(item,X_IMAGE,0) # https://stackoverflow.com/questions/23275445/move-an-image-in-python-using-tkinter
 	current_canvas.imageList.append(photo)    	
 
 	read_csv(csvfile)
 	
-def next_folder(root):
-	b = Button(root, text="next folder", command=next_folder_handler)
-	b.pack(side='left')
 
-def next_folder_handler():
-	next_folder = all_folders[(all_folders.index(current_folder)+1)%len(all_folders)] 
-	all_images= [e for e in next_folder.iterdir()]
-	background=all_images[0]
-   # print (background)
-	csvfile=FLAGS_csvfile
-	appear_photo(background,csvfile)
 
 def left_photo(root):
 	b = Button(root, text="<-- Left", command=left_photo_handler)
 	#b.pack(side='left')
 	b.pack()
-	b.place(x=650,y=780)
+	b.place(x=400,y=680)
 
 def forward_photo(root):
-	b = Button(root, text="forward", command=forward_photo_handler)
+	b = Button(root, text="Forward", command=forward_photo_handler)
 	#b.pack(side='left')
 	b.pack()
-	b.place(x=725,y=750)
+	b.place(x=475,y=650)
 
 def back_photo(root):
-	b = Button(root, text="back", command=back_photo_handler)
+	b = Button(root, text="Backward", command=back_photo_handler)
 	#b.pack(side='left')
 	b.pack()
-	b.place(x=725,y=800)
+	b.place(x=475,y=710)
 
 def right_photo(root):
 	b = Button(root, text="Right -->", command=right_photo_handler)
 	#b.pack(side='left')
 	b.pack()
-	b.place(x=800,y=780)
+	b.place(x=550,y=680)
 
 def left_photo_handler():
 	global current_image ,current_csv
@@ -374,9 +383,10 @@ def left_photo_handler():
 	#print (background)
 	current_csv = next_csv
 	print (current_csv)
-	Lb.delete(0,'end')
-	Lb2.delete(0,'end')
+	#Lb.delete(0,'end')
+	#Lb2.delete(0,'end')
 	appear_photo(current_image,current_csv)
+	'''
 	count = 0
 	print (relation_list[0:2])
 	for key in relation_list:
@@ -392,7 +402,7 @@ def left_photo_handler():
 		Lb2.insert(3, "Man with the hat is sitting on the chair next to a bag and holding a book")
 	elif '6999' in current_image.as_posix():
 		Lb2.insert(0, "The table is empty <-- nothing on table")
-
+	'''
 def forward_photo_handler():
 	pass
 def back_photo_handler():
@@ -411,9 +421,10 @@ def right_photo_handler():
 	#print (background)
 	current_csv = prev_csv
 	print (current_csv)
-	Lb.delete(0,'end')
-	Lb2.delete(0,'end')
+	#Lb.delete(0,'end')
+	#Lb2.delete(0,'end')
 	appear_photo(current_image,current_csv)
+	'''
 	count = 0
 	#print (relation_list[0:2])
 	for key in relation_list:
@@ -429,7 +440,7 @@ def right_photo_handler():
 		Lb2.insert(3, "Man with the hat is sitting on the chair next to a bag and holding a book")
 	elif '6999' in current_image.as_posix():
 		Lb2.insert(0, "The table is empty <-- nothing on table")
-
+	'''
 	#update_listbox()
 
 '''
@@ -474,11 +485,14 @@ appear_photo(current_image,current_csv)
 
 
 # app = Window(root)
-#app2 = listbox(root)
+app2 = listbox(root,width=50,height=30)
 app3=left_photo(root)
 app4=right_photo(root)
 app5=forward_photo(root)
 app6=back_photo(root)
+
+app7 = listbox(root,width=80,height=30)
+
 #app5 = res_listbox(root)
 root.wm_title("Tkinter window")
 root.geometry("2048x1024")

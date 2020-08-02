@@ -20,7 +20,7 @@ import glob
 X_IMAGE =550
 #parent_folder = Path('/home/saeid/ai2thor/Kitchens_AI2Thor/')
 #current_folder =Path('/home/saeid/ai2thor/Kitchens_AI2Thor/FloorPlan13')
-parent_folder = Path('/home/saeid/GNN')
+parent_folder = Path('/home/saeid/gnn/data')
 current_folder =parent_folder/'aa/images' 
 current_image = current_folder/'DSC_6999.JPG'
 

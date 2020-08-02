@@ -11,7 +11,7 @@ current_canvas = Canvas(root, width=1500, height=1200)
 current_canvas.imageList = []
 current_canvas.pack(side='right')
 
-all_images = sorted(glob.glob('union/*.jpg'),key=os.path.getmtime)
+all_images = sorted(glob.glob('../data/union/*.jpg'),key=os.path.getmtime)
 
 def listbox(root):
     global Lb
@@ -140,7 +140,7 @@ def appear_photo(filename,direction):
     current_canvas.imageList.append(photo)
 
 
-appear_photo('union/0_frame.jpg','front')
+appear_photo('../data/union/0_frame.jpg','front')
 
 
 app2 = listbox(root)
