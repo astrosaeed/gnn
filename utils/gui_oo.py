@@ -20,10 +20,21 @@ from pathlib import Path
 from collections import defaultdict
 import re
 import glob
+from ta_env import init_tr, init_cord
 
 all_bbs=defaultdict(set)
+parent_folder = Path('/home/saeid/gnn/data')
+all_folders = [e for e in parent_folder.iterdir() if e.is_dir()]
+current_csv = parent_folder/'aa/rels/final_outputs_DSC_6999.JPG.csv'
+im_ext= 'JPG'
+X_IMAGE =50
+#parent_folder = Path('/home/saeid/ai2thor/Kitchens_AI2Thor/')
+#current_folder =Path('/home/saeid/ai2thor/Kitchens_AI2Thor/FloorPlan13')
 
-NUM_STATES = 6
+current_folder =parent_folder/'ta_area' 
+#current_folder =parent_folder/'home' 
+current_image = current_folder/('0.'+im_ext)
+
 class Application(tk.Frame):
 
 	def __init__(self, master,current_image,current_csv):
@@ -39,40 +50,18 @@ class Application(tk.Frame):
 		self.obj2_text = ""
 		self.current_image= current_image
 		self.current_csv= current_csv
-		self.tr = self.init_tr()
+		self.tr = init_tr()
 		self.current_cord= (0,0)
-		self.cord= {(0,0):0,(0,1):1,(0,2):2,(1,0):3,(1,1):4,(2,1):5}
+		self.cord= init_cord()
 
-	def init_tr(self):
-
-		Tr = np.zeros([4, NUM_STATES, NUM_STATES])
-
-		# Front
-		Tr[0,0,1] = 1
-		Tr[0,1,2] = 1
-		Tr[0,2,3] = 1
-
-		# left
-		Tr[1,1,4] = 1
-		Tr[1,4,5] = 1
-
-		# back
-		Tr[2,1,0] = 1
-		Tr[2,2,1] = 1
-		Tr[2,3,2] = 1
-
-		# right
-		Tr[3,5,4] = 1
-		Tr[3,4,1] = 1
-
-		return Tr
+	
 
 	def create_listbox(self):
 		self.listbox = dict() # lower case for variable name 
 		#global Lb
 		#top = Tk()
 		count = 0
-		self.listbox['0'] = Listbox(root,width=30,selectmode=SINGLE)
+		self.listbox['0'] = Listbox(root,width=40,selectmode=SINGLE)
 		
 		#self.Lb.width = 50
 		'''
@@ -96,7 +85,7 @@ class Application(tk.Frame):
 
 		self.listbox['1'] = Listbox(root,width=30,selectmode=SINGLE)
 		self.listbox['1'].pack()
-		self.listbox['1'].place(x=250,y=800) # For absolute positioning
+		self.listbox['1'].place(x=5,y=800) # For absolute positioning
 		self.listbox['1'].insert(0, 'LOG')
 		self.listbox['1'].insert(1, 'current state: '+str(self.current_cord))
 
@@ -338,15 +327,21 @@ class Application(tk.Frame):
 				new_idx = str(self.cord[(x+1,y)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
 				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
-				self.current_image = current_folder/(str(new_idx)+'.jpeg')
+				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
 				self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
 				self.appear_photo(self.current_image, self.current_csv)
+			else:
+				print ('No transition')
+				self.listbox['1'].delete(2, 3)
+				self.listbox['1'].insert(2, 'error message: No transition')
 		else:
-			print ('in else')
+			print ('Not in env')
+			self.listbox['1'].delete(2, 3)
+			self.listbox['1'].insert(2, 'error message: Not in env')
 	def forward_photo_handler(self):
 		x,y = self.current_cord
 		if  (x,y+1) in self.cord.keys():
@@ -363,15 +358,21 @@ class Application(tk.Frame):
 				new_idx = str(self.cord[(x,y+1)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
 				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
-				self.current_image = current_folder/(str(new_idx)+'.jpeg')
+				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
 				self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
 				self.appear_photo(self.current_image, self.current_csv)
+			else:
+				print ('No transition')
+				self.listbox['1'].delete(2, 3)
+				self.listbox['1'].insert(2, 'error message: No transition')
 		else:
-			print ('in else')
+			print ('Not in env')
+			self.listbox['1'].delete(2, 3)
+			self.listbox['1'].insert(2, 'error message: Not in env')
 		
 	def back_photo_handler(self):
 		x,y = self.current_cord
@@ -389,16 +390,22 @@ class Application(tk.Frame):
 				new_idx = str(self.cord[(x,y-1)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
 				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
-				self.current_image = current_folder/(str(new_idx)+'.jpeg')
+				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
 				self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
 				self.appear_photo(self.current_image, self.current_csv)
+			else:
+				print ('No transition')
+				self.listbox['1'].delete(2, 3)
+				self.listbox['1'].insert(2, 'error message: No transition')
 		
 		else:
-			print ('in else')
+			print ('Not in env')
+			self.listbox['1'].delete(2, 3)
+			self.listbox['1'].insert(2, 'error message: Not in env')
 
 	def right_photo_handler(self):
 		
@@ -418,16 +425,22 @@ class Application(tk.Frame):
 				new_idx = str(self.cord[(x-1,y)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
 				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
-				self.current_image = current_folder/(str(new_idx)+'.jpeg')
+				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
 				self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
 				self.appear_photo(self.current_image, self.current_csv)
+			else:
+				print ('No transition')
+				self.listbox['1'].delete(2, 3)
+				self.listbox['1'].insert(2, 'error message: No transition')
 
 		else:
-			print ('in else')
+			print ('Not in env')
+			self.listbox['1'].delete(2, 3)
+			self.listbox['1'].insert(2, 'error message: Not in env')
 
 	def update_df_with_index(self,df):
 	#df = df.copy(deep=True)
@@ -445,17 +458,7 @@ class Application(tk.Frame):
 	#input()
 		return df
 
-parent_folder = Path('/home/saeid/gnn/data')
-all_folders = [e for e in parent_folder.iterdir() if e.is_dir()]
-current_csv = parent_folder/'aa/rels/final_outputs_DSC_6999.JPG.csv'
 
-X_IMAGE =50
-#parent_folder = Path('/home/saeid/ai2thor/Kitchens_AI2Thor/')
-#current_folder =Path('/home/saeid/ai2thor/Kitchens_AI2Thor/FloorPlan13')
-
-current_folder =parent_folder/'itc' 
-#current_folder =parent_folder/'home' 
-current_image = current_folder/'0.jpeg'
 
 
 root = tk.Tk()
