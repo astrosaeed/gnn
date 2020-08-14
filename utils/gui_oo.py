@@ -25,9 +25,10 @@ from ta_env import init_tr, init_cord
 all_bbs=defaultdict(set)
 parent_folder = Path('/home/saeid/gnn/data')
 all_folders = [e for e in parent_folder.iterdir() if e.is_dir()]
-current_csv = parent_folder/'aa/rels/final_outputs_DSC_6999.JPG.csv'
+current_csv = parent_folder/'ta_area/front/0-front.csv'
 im_ext= 'JPG'
 X_IMAGE =50
+annot_shift = 592+50
 #parent_folder = Path('/home/saeid/ai2thor/Kitchens_AI2Thor/')
 #current_folder =Path('/home/saeid/ai2thor/Kitchens_AI2Thor/FloorPlan13')
 
@@ -45,7 +46,7 @@ class Application(tk.Frame):
 		#self.Lb = []
 		self.rectangle1 = []
 		self.rectangle2 = []
-		self.relation_line = []
+		self.relation_line = None
 		self.obj1_text = ""
 		self.obj2_text = ""
 		self.current_image= current_image
@@ -107,6 +108,7 @@ class Application(tk.Frame):
 		self.canvas['0'].delete(self.relation_line)
 		self.canvas['0'].delete(self.obj1_text)
 		self.canvas['0'].delete(self.obj2_text)
+		
 		points_box = self.relation_dict[key]
 		obj1_points =  points_box["obj1"]
 		obj2_points =  points_box["obj2"]
@@ -114,24 +116,24 @@ class Application(tk.Frame):
 		obj2_name = points_box["obj2_name"]
 
 		
-		obj1_text = self.canvas['0'].create_text(((float(obj1_points[2])-float(obj1_points[0])) / 2) + float(obj1_points[0]), (float(obj1_points[1])-10),text=obj1_name,fill='red',font="Times 15 bold")
-		obj2_text = self.canvas['0'].create_text(((float(obj2_points[2])-float(obj2_points[0])) / 2) + float(obj2_points[0]), (float(obj2_points[1])-10),text=obj2_name,fill='red',font="Times 15 bold")
+		self.obj1_text = self.canvas['0'].create_text(((float(obj1_points[2])-float(obj1_points[0])) / 2) + float(obj1_points[0]), (float(obj1_points[1])-10),text=obj1_name,fill='red',font="Times 15 bold")
+		self.obj2_text = self.canvas['0'].create_text(((float(obj2_points[2])-float(obj2_points[0])) / 2) + float(obj2_points[0]), (float(obj2_points[1])-10),text=obj2_name,fill='red',font="Times 15 bold")
 		
 		
 		
 
-		relation_line = self.canvas['0'].create_line(obj1_points[0], (float(obj1_points[1])), obj2_points[0], float(obj2_points[1]), dash=(4, 2), width=5,fill='green')
+		self.relation_line = self.canvas['0'].create_line(obj1_points[0], (float(obj1_points[1])), obj2_points[0], float(obj2_points[1]), dash=(4, 2), width=5,fill='green')
 
 
 		self.rectangle1 = self.canvas['0'].create_rectangle(obj1_points[0], (float(obj1_points[1])),obj1_points[2],(float(obj1_points[3]))\
 		,outline='blue',width=2)
 		self.rectangle2 = self.canvas['0'].create_rectangle(obj2_points[0], float(obj2_points[1]), obj2_points[2],float(obj2_points[3]),\
 		outline='yellow',width=2)
-		self.canvas['0'].move(self.rectangle1,X_IMAGE,0)
-		self.canvas['0'].move(self.rectangle2,X_IMAGE,0)
-		self.canvas['0'].move(self.relation_line,X_IMAGE,0)
-		self.canvas['0'].move(self.obj1_text,X_IMAGE,0)
-		self.canvas['0'].move(self.obj2_text,X_IMAGE,0)
+		self.canvas['0'].move(self.rectangle1,annot_shift,0)
+		self.canvas['0'].move(self.rectangle2,annot_shift,0)
+		self.canvas['0'].move(self.relation_line,annot_shift,0)
+		self.canvas['0'].move(self.obj1_text,annot_shift,0)
+		self.canvas['0'].move(self.obj2_text,annot_shift,0)
 
 
 	def resize(self,img,direction):
@@ -218,6 +220,8 @@ class Application(tk.Frame):
 		df = df[df.obj1 != "leg"]
 		df = df[df.obj1 != "window"]
 		df = df[df.obj2 != "window"]
+		df = df[df.obj1 != "tile"]
+		df = df[df.obj2 != "tile"]
 		df = self.update_df_with_index(df)
 		for index, row in df.iterrows():
 			obj1_coordinates = []
