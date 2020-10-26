@@ -6,7 +6,7 @@ from pathlib import Path
 import pandas as pd
 from collections import defaultdict
 import itertools
-
+import math
 
 #parent_folder = Path('/home/saeid/gnn/data')
 parent_folder = Path('/home/saeid/Dropbox/gnn/data')
@@ -14,11 +14,12 @@ current_folder = parent_folder/'ta_area/front/rels/'
 
 class Graph:
 
-	def __init__(self):
+	def __init__(self,current_loc):
 
 		self.anchor_objs= ['table', 'man']
-		self.men_objs = ['hand','head','chair','hat','bed']
+		self.men_objs = ['hand','head','hat','bed']
 		self.table_objs = ['laptop','banana','book','chair','paper']
+		self.current_loc_objs = self.read_csv(current_folder/(current_loc+'.csv'))
 		# Defining the model structure. We can define the network by just passing a list of edges.
 		#print (detected)
 		#model = BayesianModel([('book', 'table'), ('I', 'G'), ('G', 'L'), ('I', 'S')])
@@ -32,12 +33,14 @@ class Graph:
 
 		'''bayesian_model = BayesianModel([('A', 'J'), ('R', 'J'), ('J', 'Q'),
 		                                 ('J', 'L'), ('G', 'L')])
+		'''
 		cpd_a = TabularCPD('A', 2, [[0.2], [0.8]])
 		cpd_r = TabularCPD('R', 2, [[0.4], [0.6]])
 		cpd_j = TabularCPD('J', 2,
 		                    [[0.9, 0.6, 0.7, 0.1],
 		                     [0.1, 0.4, 0.3, 0.9]],
 		                    ['R', 'A'], [2, 2])
+		'''
 		cpd_q = TabularCPD('Q', 2,
 		                    [[0.9, 0.2],
 		                     [0.1, 0.8]],
@@ -59,10 +62,14 @@ class Graph:
 
 
 
-		all_arcs = itertools.product(self.anchor_objs, self.men_objs+self.table_objs)
+		all_arcs = itertools.product(self.men_objs+self.table_objs,['table'])
 		#all_arcs = itertools.product(anchor_objs, men_objs)
 		self.model = BayesianModel(all_arcs)
 		self.build_cpds()
+
+	def update_curr_objs(self, curr_loc):
+		self.current_loc_objs, _ = self.read_csv(current_folder/(curr_loc+'.csv'))
+		return list(self.current_loc_objs)
 
 	def read_csv(self, filename):
 		#global relation_dict
@@ -85,7 +92,7 @@ class Graph:
 		df = df[df.obj2 != "tile"]
 		a = df.head(6)[['obj1','obj2']].to_records(index=False)
 		#a = zip(df.head(6)['obj1'], df.head(6)['obj2'])
-		print (a)
+		#print (a)
 		all_objs1 = set([x for (x,y) in a])
 		all_objs2 = set([y for (x,y) in a])
 		all_objs = all_objs1 | all_objs2
@@ -114,31 +121,37 @@ class Graph:
 
 		# Defining individual CPDs.
 		cpds =[]
-		for variable in self.anchor_objs:
-			temp= TabularCPD(variable=variable, variable_card=2, values=[[0.7], [0.3]], state_names={variable: ['Detected', 'Not_detected']})
+		for variable in self.men_objs + self.table_objs:
+			temp= TabularCPD(variable=variable, variable_card=2, values=[[0.7], [0.3]])
 			cpds.append(temp) 
 
-		for variable in self.men_objs:
-			temp = TabularCPD(variable=variable, variable_card=2, 
-		                      values=[[0.8, 0.5, 0.8,  0.5],
-		                              [0.2, 0.5, 0.2, 0.5]],
-		                      evidence=['table', 'man'],
-		                      evidence_card=[2, 2],
-		                      state_names={variable: ['Detected', 'Not_detected'],
-		                                   'table': ['Detected', 'Not_detected'],
-		                                   'man': ['Detected', 'Not_detected']})
-			cpds.append(temp)	
+		state_dict = {}
+		for ev in self.men_objs + self.table_objs:
+			state_dict[ev] = ['Detected', 'Not_detected'] 
+		#print (temp.variables)
+		#print (state_dict.keys())
+		
+		#for var in self.anchor_objs:
+		v1 = [0.8 if i%2==0 else 0.5 for i in range(int(math.pow(2,len(self.men_objs + self.table_objs))))] 
+		v2 =  [0.2 if i%2==0 else 0.5 for i in range(int(math.pow(2,len(self.men_objs + self.table_objs))))]
+		evi_c = [2 for i in range(len(self.men_objs + self.table_objs))]
+		evi = self.men_objs + self.table_objs
+		#print (self.model.nodes)
 
-		for variable in self.table_objs:
-			temp = TabularCPD(variable=variable, variable_card=2, 
-		                      values=[[0.8, 0.8, 0.4, 0.4],
-		                              [0.2, 0.2, 0.6, 0.6]],
-		                      evidence=['table', 'man'],
-		                      evidence_card=[2, 2],
-		                      state_names={variable: ['Detected', 'Not_detected'],
-		                                   'table': ['Detected', 'Not_detected'],
-		                                   'man': ['Detected', 'Not_detected']})
-			cpds.append(temp)
+
+		temp = TabularCPD(variable='table', variable_card=2, 
+	                      values=[ v1, v2],
+	                      evidence=evi , 
+	                      evidence_card= evi_c )
+
+		'''
+		temp = TabularCPD(variable='table', variable_card=2, 
+	                      values=[[0.3, 0.5],
+		                          [0.7, 0.5]],
+	                      evidence=evi ,
+	                      evidence_card= evi_c )
+		'''
+		cpds.append(temp)	
 
 		'''
 		temp = TabularCPD(variable='table', variable_card=2, 
@@ -227,23 +240,25 @@ class Graph:
 
 		#print (model.check_model())
 
+
 def main():
 
-	mygraph = Graph()
+	mygraph = Graph('0')
 
 	infer = VariableElimination(mygraph.model)
-	belief_propagation = BeliefPropagation(mygraph.model)
+	#belief_propagation = BeliefPropagation(mygraph.model)
 	#g_dist = infer.query(['G'])
 
 	#print(g_dist)
 
-	#print(infer.query(['laptop'], evidence={'table': 'Detected', 'man':'Not_detected'}))
-	print(infer.query(['laptop'], evidence={'table': 'Not_detected','man':'Detected','banana':'Detected'}))
-	print(belief_propagation.query(['laptop'], evidence={'table': 'Not_detected',
-														'man':'Detected',
-														'banana':'Detected',
-														'chair':'Not_detected',
-														'book':'Not_detected'}))
-
+	print(infer.query(['laptop'], evidence={'table': 'Detected', 'man':'Not_detected'}))
+	
+	#print(infer.query(['laptop'], evidence={'table': 'Not_detected','man':'Detected','banana':'Detected'}))
+	#print(belief_propagation.query(['laptop'], evidence={'table': 'Not_detected',
+	#													'man':'Detected',
+	#													'banana':'Detected',
+	#													'chair':'Not_detected',
+	#													'book':'Not_detected'}))
+	
 if __name__ == '__main__':
 	main()
