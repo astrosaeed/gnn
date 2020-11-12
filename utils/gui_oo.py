@@ -20,12 +20,13 @@ from pathlib import Path
 from collections import defaultdict
 import re
 import glob
-from ta_env import init_tr, init_cord
+from ta_env import init_tr, init_cord, NUM_LOCS
 
 all_bbs=defaultdict(set)
-parent_folder = Path('/home/saeid/gnn/data')
+#parent_folder = Path('/home/saeid/Dropbox/gnn/data')
+parent_folder = Path('../gnn/data')
 all_folders = [e for e in parent_folder.iterdir() if e.is_dir()]
-current_csv = parent_folder/'ta_area/front/0-front.csv'
+current_csv = parent_folder/'ta_area/front/rels/0.csv'
 im_ext= 'JPG'
 X_IMAGE =50
 annot_shift = 592+50
@@ -51,7 +52,7 @@ class Application(tk.Frame):
 		self.obj2_text = ""
 		self.current_image= current_image
 		self.current_csv= current_csv
-		self.tr = init_tr()
+		self.tr = init_tr(NUM_LOCS)
 		self.current_cord= (0,0)
 		self.cord= init_cord()
 
@@ -204,8 +205,7 @@ class Application(tk.Frame):
 
 	def read_csv(self, filename):
 		#global relation_dict
-		self.relation_list.clear()
-		self.relation_dict.clear()
+		
 		df = pd.read_csv(filename,delimiter='\t')
 		#print (df.head())
 		df['obj1_x_mean'] = df[['obj1_1','obj1_3']].mean(axis=1).astype('int').astype('str')
@@ -285,8 +285,10 @@ class Application(tk.Frame):
 		photo = ImageTk.PhotoImage(image= result)
 		item = self.canvas['0'].create_image(0, 0,anchor="nw" ,image=photo)
 		self.canvas['0'].move(item,X_IMAGE,0) # https://stackoverflow.com/questions/23275445/move-an-image-in-python-using-tkinter
-		self.canvas['0'].imageList.append(photo)    	
+		self.canvas['0'].imageList.append(photo)
 
+		self.relation_list.clear()
+		self.relation_dict.clear()    	
 		self.read_csv(csvfile)
 
 	def left_photo(self,root):
@@ -324,16 +326,16 @@ class Application(tk.Frame):
 				self.listbox['1'].delete(1, 2)
 				self.listbox['1'].insert(1, 'current state: '+str(self.current_cord))
 				#all_images= [e for e in sorted(current_folder.iterdir())]
-				all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
+				#all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
 				self.current_cord = (x+1,y)
 				#idx= (all_images.index(self.current_image)+1)%len(all_images)
 				#idx = current_image.stem
 				new_idx = str(self.cord[(x+1,y)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
-				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
+				#next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
 				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
-				self.current_csv = next_csv
+				#self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
@@ -361,10 +363,10 @@ class Application(tk.Frame):
 				#idx = current_image.stem
 				new_idx = str(self.cord[(x,y+1)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
-				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
+				#next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
 				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
-				self.current_csv = next_csv
+				#self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
@@ -387,16 +389,16 @@ class Application(tk.Frame):
 				self.listbox['1'].delete(1, 2)
 				self.listbox['1'].insert(1, 'current state: '+str(self.current_cord))
 				#all_images= [e for e in sorted(current_folder.iterdir())]
-				all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
+				#all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
 				
 				#idx= (all_images.index(self.current_image)+1)%len(all_images)
 				#idx = current_image.stem
 				new_idx = str(self.cord[(x,y-1)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
-				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
+				#next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
 				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
-				self.current_csv = next_csv
+				#self.current_csv = next_csv
 				print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
@@ -422,17 +424,17 @@ class Application(tk.Frame):
 				self.listbox['1'].delete(1, 2)
 				self.listbox['1'].insert(1, 'current state: '+str(self.current_cord))
 				#all_images= [e for e in sorted(current_folder.iterdir())]
-				all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
+				#all_csvs= [e for e in sorted((parent_folder/'aa/rels').iterdir())]
 				
 				#idx= (all_images.index(self.current_image)+1)%len(all_images)
 				#idx = current_image.stem
 				new_idx = str(self.cord[(x-1,y)]) 
 				#next_image=all_images[(all_images.index(self.current_image)+1)%len(all_images)] 
-				next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
+				#next_csv = all_csvs[(all_csvs.index(self.current_csv)+1)%len(all_csvs)]
 				self.current_image = current_folder/(str(new_idx)+'.'+im_ext)
 				#print (background)
-				self.current_csv = next_csv
-				print (self.current_csv)
+				#self.current_csv = next_csv
+				#print (self.current_csv)
 				#Lb.delete(0,'end')
 				#Lb2.delete(0,'end')
 				self.appear_photo(self.current_image, self.current_csv)

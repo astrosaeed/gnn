@@ -3,6 +3,12 @@ This repository is used for processing the GNN-based scene graph generation gene
 
 In the current setup, a complete trial involves robot doing navigation while taking pictures from the environment. Once navigation is done, the images are sent to the model (based in Google Cloud) to extract the relations (in form of csv files). All CSV files then are passed to the SQL database and to the reasoner.
 
+## Dependencies
+
+Pandas, numpy, torch, torchvision, tkinter <\br>
+
+I suggest installing these libraries in a virtual environment.
+
 ## How to run the system?
 
 To run the system, first make sure the Segway-based robot is operating and localized perfectly. The segway-based repository instructions is [here](https://github.com/astrosaeed/bwi/tree/temp).
@@ -125,3 +131,6 @@ $ roscd gnn/src/
 $ python gui.py --image [image_name] --csvfile [csv file of the output]
 ```
 
+### Visualization of TA area
+
+Create a folder called 'data' in the gnn folder and then download the [ta_area]( https://drive.google.com/drive/folders/1SbEfe4YWkNUQrMB2l75YC7XbG_TpMvaZ?usp=sharing)
